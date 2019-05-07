@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+    <link href="https://ssl.gstatic.com/docs/script/css/add-ons.css" rel="stylesheet"> 
+  </head>
+  <body>
+      <div class="sidebar">
+         <form name="customerInfo" id="customerInfo">
+           <div class="block form-group">
+              API Key
+              <br>
+              <input type="text" id="apiKey" name="apiKey" placeholder="api key" value="redacted"/>
+           </div>
+           
+           <div class="block form-group">
+              <select name="tabSelection" id="tabSelection">
+                 <option value="select a tab">select a tab</option>
+              </select>
+           </div>
+         </form>
+         <br>
+         <div class="block form-group">
+             <input type="button" value="Start Search" onclick="google.script.run.startLookup(document.getElementById('customerInfo'))" />
+         </div>
+     </div>
+     
+    <!-- Load the jQuery library from the Google CDN -->
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+
+
+    <script>
+    
+        // The code in this function runs when the page is loaded.
+        // getTabs is a server side function in Code.gs
+        $(function() {
+           google.script.run.withSuccessHandler(showTabsInSidebar).getTabs(); 
+           //TODO - READ IN API IF SAVED AND PUT VALUE IN FORM
+        });
+      
+        function showTabsInSidebar(tabs) {
+          //alert("test");
+          var select = document.getElementById("tabSelection");
+          select.options[0] = null;
+          for (var i = 0; i < tabs.length; i++) {
+             var option = document.createElement('option');
+             option.text = option.value = tabs[i];
+             select.add(option, 0);
+          }
+        }
+        
+    </script>
+    
+  </body>
+</html>
+
+
