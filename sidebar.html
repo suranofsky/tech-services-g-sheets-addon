@@ -55,3 +55,132 @@
 </html>
 
 
+<html><head>
+
+
+     <meta charset="utf-8">
+     <link rel="stylesheet" href="https://ssl.gstatic.com/docs/script/css/add-ons.css">
+     <link href="https://fonts.googleapis.com/css?family=Roboto:400,700" rel="stylesheet">
+     <style type="text/css">
+        body {
+          font-family: 'Roboto', sans-serif;
+        }
+        .top-logo {margin-bottom:50px;}
+     </style>
+
+</head>
+<body bgcolor="#44546D">
+      <div class="sidebar">
+         <form name="customerInfo" id="customerInfo">
+           <div class="block form-group">
+              <span style="color:white"><b>OCLC API Key</b></span>
+              <br>
+              <input type="text" id="apiKey" name="apiKey" placeholder="api key (required)" value=""/>
+              <br>
+           </div>
+           <br>
+           <span style="color:white"><b>Select tab that contains ISBNs</b></span>
+           <br>
+           <div class="block form-group">
+              <select name="searchForTab" style="text-align:left !important" id="searchForTab" onfocus="google.script.run.withSuccessHandler(showTabsInSidebar).getTabs()">
+              </select>
+           </div>
+           <br>
+            <span style="color:white"><b>Select search criteria tab</b></span>
+            <br>
+           <div class="block form-group">
+              <select name="tabSelection" style="text-align:left !important" id="tabSelection" onfocus="google.script.run.withSuccessHandler(showTabsInSidebar).getTabs()">
+              </select>
+           </div>
+           <br>
+         <div class="block form-group">
+              <input type="button" class="action" value="Start Search" onclick="startSearch()" />
+         </div>
+        <br><hr>
+         <div class="block form-group">
+             <input type="button" class="action" value="Click to initialize sample tabs" onclick="google.script.run.withSuccessHandler(showTabsInSidebar).initSampleData();" />
+         </div>
+         <br>
+         
+         </form>
+         
+        
+         <br>
+
+     </div>
+     
+     
+     
+    <!-- Load the jQuery library from the Google CDN -->
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+    
+    
+    <script>
+    function startSearch() {
+      google.script.run.startLookup(document.getElementById('customerInfo'));
+    }
+    
+    </script>
+
+
+
+    <script>
+    
+        // The code in this function runs when the page is loaded.
+        // getTabs is a server side function in Code.gs
+        $(function() {
+           google.script.run.withSuccessHandler(showTabsInSidebar).getTabs(); 
+           google.script.run.withSuccessHandler(setKey).getStoredAPIKey();
+        });
+        
+        function setKey(apiKey){
+          if (apiKey == null  || apiKey === undefined) apiKey = "";
+          document.getElementById('apiKey').value=apiKey;
+        }
+      
+        function showTabsInSidebar(tabs) {
+          //alert("test");
+          var select = document.getElementById("tabSelection");
+          var searchFor = document.getElementById("searchForTab");
+          
+          var currentSelect = null;
+          var currentSearchForIndex = null;
+          
+          try {
+            var currentSelectIndex = document.getElementById("tabSelection").selectedIndex;
+            var currentSearchForIndex = document.getElementById("searchForTab").selectedIndex;
+            
+            currentSelect = document.getElementById("tabSelection").options[currentSelectIndex].value;
+            currentSearchForIndex = document.getElementById("searchForTab").options[currentSearchForIndex].value;
+          }
+          catch(err) {
+            //FINE - MAY NOT BE POPULATED YET
+          }
+          
+          
+          $('#tabSelection').empty();
+          $('#searchForTab').empty();
+          
+
+          
+          //ADD TABS TO DROP DOWN BOXES
+          for (var i = 0; i < tabs.length; i++) {
+             var option = document.createElement('option');
+             option.text = option.value = tabs[i];
+             select.add(option, 0);
+             if (currentSelect == option.text) option.selected = true;
+          }
+           for (var i = 0; i < tabs.length; i++) {
+             var option = document.createElement('option');
+             option.text = option.value = tabs[i];
+             searchFor.add(option, 0);
+             if (currentSearchForIndex == option.text) option.selected = true;
+          }
+          
+          
+      }
+        
+    </script>
+    
+  </body>
+</html>
