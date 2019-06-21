@@ -1,4 +1,4 @@
-This is a beta version of a Google Apps Script I created for our library technical services team who maintain the items in the library catalog.  It is used as a Google Sheets add-on.
+This is the latest version of a Google Apps Script I created for our library technical services team who maintain the items in the library catalog.  It is used as a Google Sheets add-on.
 <br>
 The script expects ISBN numbers in column #1 and LCCN numbers in #2.  Using those identifiers it looks up records using a vendor provided API.
 <br>
