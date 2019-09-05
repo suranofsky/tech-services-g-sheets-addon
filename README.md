@@ -1,13 +1,15 @@
-This is the latest version of a Google Apps Script I created for our library technical services team who maintain the items in the library catalog.  It is used as a Google Sheets add-on.
-<br>
-The script expects ISBN numbers in column #1 and LCCN numbers in #2.  Using those identifiers it looks up records using a vendor provided API.
-<br>
-Based on the options configured within the spreadsheet (in a config tab) it selects the best matched record and writes the details of the record to the spreadsheet.
-<br>
-I collaborated on this project with Lehigh's Metadata Librarian who helped me understand the needed functionality.  She did all of the testing and provided feedback for each iteration.
-<br>
-We will be co-presenting a session about this project to the ALA Technical Services Workflow Efficiency Interest group during the American Library Associations's 2019 annual conference.
-<br>
+This project (MatchMARC) is a Google Sheets Add-on created for the Lehigh University Libraries technical services team.
+<br><br>
+I collaborated on this project with Lehigh's Cataloging/Metadata Librarian, Lisa McColl, who helped me understand the needed functionality.  She did all of the testing and provided feedback for each iteration of the project.
+<br><br>
+We co-presented a session about this project to the ALA Technical Services Workflow Efficiency Interest group during the American Library Association's 2019 annual conference. You can view our slides here: https://connect.ala.org/HigherLogic/System/DownloadDocumentFile.ashx?DocumentFileKey=3a69473d-a4a3-4781-a546-72b394ef3886
+<br><br>
+We co-authoring an article about the project in the November 2019 issue of the code4lib journal.  
+<br><br>
+This add-on is publicly available using the “Add-ons > Get add-ons” menu in any Google Sheet. A search for MARC will show the add-on.
+<br><br>
+You can also find the add-on here:
+https://gsuite.google.com/marketplace/app/matchmarc/903511321480
 
 
 
