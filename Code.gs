@@ -50,6 +50,8 @@ function startLookup(form) {
    var emailAddress = form.emailAddress;
    PropertiesService.getUserProperties().setProperty('emailAddress', emailAddress);
    
+   var startingRow = form.rowNumber;
+   
    //SETUP SHEETS/TABS/RANGES TO READ FROM/WRITE TO
    var settingsTabName = form.tabSelection;
    var dataTabName = form.searchForTab;
@@ -78,7 +80,9 @@ function startLookup(form) {
    var lastCol = 100;
    var dataRange = dataSheet.getRange(2, 1, lastRow , 100)
    var numRows = dataRange.getNumRows();
-   for (var x = 1; x <= numRows; x++) {
+   var x = 1;
+   if (startingRow != null && startingRow != "") x = startingRow -1;
+   for (x; x <= numRows; x++) {
         var isbnCell = dataRange.getCell(x,1);
         var lccnCell = dataRange.getCell(x,2)
         var searchCriteria = null;
@@ -88,10 +92,10 @@ function startLookup(form) {
         if (!isbnCell.isBlank()) {
           var isbn = isbnCell.getValue();
           if (isbn.length < 10) isbn = pad(10,isbn,0);
-          searchCriteria = "srw.bn=" + isbn;
+          searchCriteria = "srw.bn=" + "%22" + isbn + "%22";
         }
         else if (!lccnCell.isBlank()) {
-          searchCriteria = "srw.dn=" + lccnCell.getValue();
+          searchCriteria = "srw.dn=" + "%22" + lccnCell.getValue() + "%22";
         }
         else {
           continue;
@@ -259,7 +263,8 @@ function startLookup(form) {
      });
    }
    //END NEW FEATURE
-   ui.alert("done");
+   //ui.alert("done");
+   spreadsheet.toast("complete");
 
  }
 
@@ -272,7 +277,6 @@ function startLookup(form) {
 
   function matchFoundWriteResults(outputRange,dataFields,controlFields,dataRange,rowNumber) {
   
-
                var outPutSettingsRows = outputRange.getNumRows();
                //ui.alert(outPutSettingsRows);
                for (var b = 1; b <= outPutSettingsRows; b++) {
@@ -306,7 +310,6 @@ function startLookup(form) {
 
                  }
                }
-
    }
 
 
@@ -395,5 +398,3 @@ function startLookup(form) {
   
   
 
-									
-   
