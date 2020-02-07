@@ -45,34 +45,59 @@
               <span style="color:white">(optional)</span>
            </div>
            <br>
+
            
-           
+         <div class="block form-group">
+              <input type="button" class="action" value="Start Search" onclick="startSearch()" />
+         </div>
+         <br><hr>
+         
+           <span style="color:white"><b>After you have performed the search you can receive an email of records (that will contain new fields you've setup in the spreadsheet).</b></span>         
+           <br>
            <span style="color:white"><b>Create MARC record file and mail to:</b></span>
            <br>
            <div class="block form-group">
               <input type="text" id="emailAddress" name="emailAddress" placeholder="email address" value=""/>
+           </div>
+           <br>
+           <span style="color:white"><b>001 Value is in field:</b></span>
+           <div class="block form-group">
+              <input type="text" id="oclcNumber" name="oclcNumber" placeholder="column number?" value=""/>
+           </div>
+           <br>
+           
+           <span style="color:white"><b>Start with record at row#</b></span>
+           <br>
+           <div class="block form-group">
+              <input type="text" id="rowNumberForEmail" name="rowNumberForEmail" placeholder="row number" value=""/>
               <br>
               <span style="color:white">(optional)</span>
            </div>
            <br>
            
+           
          <div class="block form-group">
-              <input type="button" class="action" value="Start Search" onclick="startSearch()" />
+             <input type="button" class="action" value="email MARC file" onclick="startEmail();" />
          </div>
-        <br><hr>
+         <br><br>
+         <hr>
          <div class="block form-group">
              <input type="button" class="action" value="Click to initialize sample tabs" onclick="google.script.run.withSuccessHandler(showTabsInSidebar).initSampleData();" />
          </div>
          <br>
          
+         
          </form>
          
         
          <br>
-
+     <span style="color:white"><b>v. 11</b></span>
+     <br>
+     <span style="color:white"><b><a style="color:white" href="https://github.com/suranofsky/tech-services-g-sheets-addon/blob/master/README.md#Versions" target="new">See details about v. 11 in github</a></b></span>
      </div>
      
-
+     
+     
     <!-- Load the jQuery library from the Google CDN -->
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
     
@@ -82,6 +107,9 @@
       google.script.run.startLookup(document.getElementById('customerInfo'));
     }
     
+    function startEmail() {
+      google.script.run.sendMARCRecordByEmail(document.getElementById('customerInfo'));
+    }
     </script>
 
 
@@ -94,7 +122,13 @@
            google.script.run.withSuccessHandler(showTabsInSidebar).getTabs(); 
            google.script.run.withSuccessHandler(setKey).getStoredAPIKey();
            google.script.run.withSuccessHandler(setEmail).getStoredEmailAddress();
+           google.script.run.withSuccessHandler(setOclcCol).getStoredOclcColNumber();
         });
+        
+        function setOclcCol(oclcColNumber) {
+          if (oclcColNumber == null || oclcColNumber == undefined) oclcColNumber = "";
+          document.getElementById('oclcNumber').value=oclcColNumber;
+        }
         
         function setEmail(emailAddress) {
           if (emailAddress == null || emailAddress == undefined) emailAddress = "";
