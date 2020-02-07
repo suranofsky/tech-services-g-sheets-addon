@@ -13,7 +13,8 @@ function initSampleData(form) {
       //IN CASE TAB WITH THIS NAME ALREADY EXISTS
       settingsSheet.setName("Search Criteria Sample" + rand);
     }
-    var outputRange = settingsSheet.getRange(1, 1, 20, 8);
+    var outputRange = settingsSheet.getRange(1, 1, 37, 8);
+    
     
     //ADD THE SEARCH CRITERIA
     outputRange.getCell(1,1).setValue("search:").setFontWeight("bold");
@@ -78,33 +79,84 @@ function initSampleData(form) {
     
     //ADD THE RETURN CRITERIA
     outputRange.getCell(11,1).setValue("fields:").setFontWeight("bold");
-    outputRange.getCell(11,2).setValue("column:").setFontWeight("bold");
+    outputRange.getCell(11,2).setValue("starting column:").setFontWeight("bold");
     
     outputRange.getCell(12,1).setNumberFormat("@").setValue("001").setBackground("#D6EAF8");
     outputRange.getCell(12,2).setNumberFormat("@").setBackground("#D6EAF8").setValue("4");
-    outputRange.getCell(12,3).setValue("Cols 1,2,3 are used for ISBN, LCCN, 'local record found indicator'");
+    outputRange.getCell(12,3).setValue("Cols 1,2,3 are used for ISBN, LCCN, 'local record found indicator'.  082:092:050 notation will print first field found.");
     
     outputRange.getCell(13,1).setValue("245$a").setBackground("#D6EAF8");
-    outputRange.getCell(13,2).setNumberFormat("@").setBackground("#D6EAF8").setValue("5");
+    //outputRange.getCell(13,2).setNumberFormat("@").setBackground("#D6EAF8").setValue("5");
     
     outputRange.getCell(14,1).setValue("245$b").setBackground("#D6EAF8");
-    outputRange.getCell(14,2).setNumberFormat("@").setBackground("#D6EAF8").setValue("6");
+    //outputRange.getCell(14,2).setNumberFormat("@").setBackground("#D6EAF8").setValue("6");
     
     outputRange.getCell(15,1).setValue("245$c").setBackground("#D6EAF8");
-    outputRange.getCell(15,2).setNumberFormat("@").setBackground("#D6EAF8").setValue("7");
+    //outputRange.getCell(15,2).setNumberFormat("@").setBackground("#D6EAF8").setValue("7");
     
     outputRange.getCell(16,1).setNumberFormat("@").setBackground("#D6EAF8").setValue("082:092:050");
-    outputRange.getCell(16,2).setNumberFormat("@").setBackground("#D6EAF8").setValue("8");
-    outputRange.getCell(16,3).setValue("<-- will print first field found");
+    //outputRange.getCell(16,2).setNumberFormat("@").setBackground("#D6EAF8").setValue("8");
+    //outputRange.getCell(16,3).setValue("<-- will print first field found");
     
     outputRange.getCell(17,1).setNumberFormat("@").setBackground("#D6EAF8").setValue("050:090");
-    outputRange.getCell(17,2).setNumberFormat("@").setBackground("#D6EAF8").setValue("9");
+    //outputRange.getCell(17,2).setNumberFormat("@").setBackground("#D6EAF8").setValue("9");
     
     outputRange.getCell(18,1).setNumberFormat("@").setBackground("#D6EAF8");
-    outputRange.getCell(18,2).setNumberFormat("@").setBackground("#D6EAF8");
+    //outputRange.getCell(18,2).setNumberFormat("@").setBackground("#D6EAF8");
     
     outputRange.getCell(19,1).setNumberFormat("@").setBackground("#D6EAF8");
-    outputRange.getCell(19,2).setNumberFormat("@").setBackground("#D6EAF8");
+    //outputRange.getCell(19,2).setNumberFormat("@").setBackground("#D6EAF8");
+    
+    outputRange.getCell(20,1).setNumberFormat("@").setBackground("#D6EAF8");
+    //outputRange.getCell(20,2).setNumberFormat("@").setBackground("#D6EAF8");
+    
+    outputRange.getCell(21,1).setNumberFormat("@").setBackground("#D6EAF8");
+    //outputRange.getCell(21,2).setNumberFormat("@").setBackground("#D6EAF8");
+    
+    outputRange.getCell(22,1).setNumberFormat("@").setBackground("#D6EAF8");
+    //outputRange.getCell(22,2).setNumberFormat("@").setBackground("#D6EAF8");
+    
+    outputRange.getCell(23,1).setNumberFormat("@").setBackground("#D6EAF8");
+    //outputRange.getCell(23,2).setNumberFormat("@").setBackground("#D6EAF8");
+    
+    outputRange.getCell(24,1).setNumberFormat("@").setBackground("#D6EAF8");
+    //outputRange.getCell(24,2).setNumberFormat("@").setBackground("#D6EAF8");
+    
+    outputRange.getCell(25,1).setNumberFormat("@").setBackground("#D6EAF8");
+    //outputRange.getCell(25,2).setNumberFormat("@").setBackground("#D6EAF8");
+    
+    outputRange.getCell(26,1).setNumberFormat("@").setBackground("#D6EAF8");
+    //outputRange.getCell(26,2).setNumberFormat("@").setBackground("#D6EAF8");
+    
+    outputRange.getCell(27,1).setNumberFormat("@").setBackground("#D6EAF8");
+    //outputRange.getCell(27,2).setNumberFormat("@").setBackground("#D6EAF8");
+    
+    outputRange.getCell(28,1).setNumberFormat("@").setBackground("#D6EAF8");
+    //outputRange.getCell(28,2).setNumberFormat("@").setBackground("#D6EAF8");
+    
+    outputRange.getCell(29,1).setNumberFormat("@").setBackground("#D6EAF8");
+    //outputRange.getCell(29,2).setNumberFormat("@").setBackground("#D6EAF8");
+    
+    outputRange.getCell(30,1).setNumberFormat("@").setBackground("#D6EAF8");
+    //outputRange.getCell(30,2).setNumberFormat("@").setBackground("#D6EAF8");
+    
+    outputRange.getCell(31,1).setNumberFormat("@").setBackground("#D6EAF8");
+    //outputRange.getCell(31,2).setNumberFormat("@").setBackground("#D6EAF8");
+    
+    outputRange.getCell(32,1).setNumberFormat("@").setBackground("#D6EAF8");
+    //outputRange.getCell(32,2).setNumberFormat("@").setBackground("#D6EAF8");
+    
+    outputRange.getCell(33,1).setNumberFormat("@").setBackground("#D6EAF8");
+    //outputRange.getCell(33,2).setNumberFormat("@").setBackground("#D6EAF8");
+    
+    outputRange.getCell(34,1).setNumberFormat("@").setBackground("#D6EAF8");
+    //outputRange.getCell(34,2).setNumberFormat("@").setBackground("#D6EAF8");
+    
+    outputRange.getCell(35,1).setNumberFormat("@").setBackground("#D6EAF8");
+    //outputRange.getCell(35,2).setNumberFormat("@").setBackground("#D6EAF8");
+    
+    outputRange.getCell(36,1).setNumberFormat("@").setBackground("#D6EAF8");
+    //outputRange.getCell(36,2).setNumberFormat("@").setBackground("#D6EAF8");
     
     
         
