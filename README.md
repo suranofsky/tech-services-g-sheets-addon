@@ -12,10 +12,10 @@ You can also find the add-on here:
 https://gsuite.google.com/marketplace/app/matchmarc/903511321480
 
 
-Versions
-2-7-2020
-Version 11
-New Features:
+#Versions
+###2-7-2020
+###Version 11
+##New Features:
 1) Email is not separate from the search/match functionality.  After you have searched for the records, the 'email' is a 2nd step.  The email will use the 001 values found in the search.  You will have to fill in the field informating the script which column the 001 value is in.
 2) On the search criteria tab, you can only configure the *starting* column for the data you want written to the spreadsheet. This was done to speed up the execution.  Google Apps script is much faster when it is writing a block of cells instead of writing one cell at a time.  This speeds up the execution considerably.
 3) When you email the file to yourself, you can add MARC fields to each record.  Configure this by putting the field/subfield in the column heading and the values in the rows for each record.  You can add multiple fields to each record.  (Please see screen print below for clarification)
