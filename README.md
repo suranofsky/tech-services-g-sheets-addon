@@ -13,6 +13,14 @@ https://gsuite.google.com/marketplace/app/matchmarc/903511321480
 
 
 # Versions
+
+### 6-6-2020
+### Version 12
+## New Features and Fixes
+1) If it finds duplicate local holdings, it will select one and bold the row so you know it found a duplicate
+2) If no match is found, it will select the top match (with the most holdings) only if you check the box: Select first record when no match?
+3) New ISSN Search: If you label row one, column one "ISBN" it will search by ISBN.  If you label row one, column one "ISSN" it will search by ISSN
+
 ### 2-7-2020
 ### Version 11
 ## New Features:
