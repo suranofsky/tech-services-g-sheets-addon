@@ -46,6 +46,7 @@ function startLookup(form) {
    
    
    var startingRow = form.rowNumber;
+   var selectFirstRecord = form.selectFirstRecord;
    
    //SETUP SHEETS/TABS/RANGES TO READ FROM/WRITE TO
    var settingsTabName = form.tabSelection;
@@ -71,6 +72,9 @@ function startLookup(form) {
      checkLocalCode = checkLocalHoldings.substring(x+1,checkLocalHoldings.length);
    }
    
+   //ADD THE ABILITY TO SEARCH BY ISSN
+   //SEARCH TYPE WILL BE ISBN OR ISSN
+   var searchType = dataSheet.getRange(1, 1).getValue().trim();
    
    //FOR EACH ITEM TO BE LOOKED UP IN THE DATA SPREADSHEET:
    var lastRow = dataSheet.getLastRow();
@@ -87,9 +91,17 @@ function startLookup(form) {
         //VALUE IN THE LCCN COL.
         //IF THE ROW CONTAINS NEITHER IT MOVES TO THE NEXT ROW
         if (!isbnCell.isBlank()) {
+          //isbn could hold an issn or isbn depending on the column is labeled
           var isbn = isbnCell.getValue();
-          if (isbn.length < 10) isbn = pad(10,isbn,0);
-          searchCriteria = "srw.bn=" + "%22" + isbn + "%22";
+          if (searchType == "ISBN") {
+            //ISBN SEARCH
+            if (isbn.length < 10) isbn = pad(10,isbn,0);
+            searchCriteria = "srw.bn=" + "%22" + isbn + "%22";
+          }
+          else {
+            //ISSN SEARCH
+            searchCriteria = "srw.in=" + "%22" + isbn + "%22";
+          }
         }
         else if (!lccnCell.isBlank()) {
           searchCriteria = "srw.dn=" + "%22" + lccnCell.getValue() + "%22";
@@ -223,7 +235,7 @@ function startLookup(form) {
            //TO THE NEXT LOOKUP
            if (matchedTheCriteria == 0) { 
                found = true;
-               matchFoundWriteResults(outputRange,dataFields,controlFields,dataRange,x,dataSheet);
+               matchFoundWriteResults(outputRange,dataFields,controlFields,dataRange,x,dataSheet,0);
                break;
            }
 
@@ -231,10 +243,11 @@ function startLookup(form) {
        //ADDED 8/22/2019
        //IF FOUND == FALSE & THE SEARCH FOUND AT LEAST ONE RECORD - USE THE TOP RECORD
        //IT WILL BE THE ONE WITH THE LARGEST NUMBER OF HOLDINGS
-       if (listOfRecords.length > 0 && found == false) {
+       //6-6-20 MAKING THIS CONFIGURABLE WITH A CHECKBOX
+       if (listOfRecords.length > 0 && found == false && selectFirstRecord == "true") {
          var dataFields = listOfRecords[0].getChild("recordData",nsp).getChild("record",slimNsp).getChildren("datafield",slimNsp);
          var controlFields = listOfRecords[0].getChild("recordData",nsp).getChild("record",slimNsp).getChildren("controlfield",slimNsp);
-         matchFoundWriteResults(outputRange,dataFields,controlFields,dataRange,x,dataSheet);
+         matchFoundWriteResults(outputRange,dataFields,controlFields,dataRange,x,dataSheet,0);
        }
        
    }
@@ -250,7 +263,7 @@ function startLookup(form) {
 
 
 
-  function matchFoundWriteResults(outputRange,dataFields,controlFields,dataRange,rowNumber,dataSheet) {
+  function matchFoundWriteResults(outputRange,dataFields,controlFields,dataRange,rowNumber,dataSheet,recordCount) {
   
                var ui = SpreadsheetApp.getUi();
                var colors = new Array(1);
@@ -297,6 +310,9 @@ function startLookup(form) {
                //WRITE RESULTS
                var oneRowDataRange = dataSheet.getRange(rowNumber+1,outputColStart,1,outputRange.getNumRows());
                oneRowDataRange.setValues(colors);
+               //6-6-20 - IF THERE WAS MORE THAN ONE LOCAL RECORD FOUND
+               //BOLD THE ROW
+               if (recordCount > 1) oneRowDataRange.setFontWeight("bold")
    }
 
 
@@ -346,14 +362,14 @@ function startLookup(form) {
        var slimNsp = XmlService.getNamespace('http://www.loc.gov/MARC21/slim'); 
     
        var root = document.getRootElement();
-       var test = root.getChild("numberOfRecords",nsp).getValue();
-       if (test == "1") {
+       var recordCount = root.getChild("numberOfRecords",nsp).getValue();
+       if (recordCount > 0) {
          //FOUND A LOCAL RECORD, WRITE RESULTS TO THE SPREADSHEET
          var records = root.getChild("records",nsp);
          var listOfRecords = records.getChildren();
          var dataFields = listOfRecords[0].getChild("recordData",nsp).getChild("record",slimNsp).getChildren("datafield",slimNsp);
          var controlFields = listOfRecords[0].getChild("recordData",nsp).getChild("record",slimNsp).getChildren("controlfield",slimNsp);  
-         matchFoundWriteResults(outputRange,dataFields,controlFields,dataRange,x,dataSheet);
+         matchFoundWriteResults(outputRange,dataFields,controlFields,dataRange,x,dataSheet,recordCount);
          return true;
        }
        return false;
