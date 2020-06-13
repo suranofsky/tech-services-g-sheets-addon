@@ -202,21 +202,28 @@ function startLookup(form) {
                   //ui.alert("GETTING THE DATA FIELDS FOR " + field);
                   var dataField = getDataField(dataFields,field); //040
                   //ui.alert(dataField);
-                  if (dataField == null) continue;
-                  var subfields = dataField.getChildren("subfield",slimNsp);
-                  //ui.alert(subfields);
                   var valueExists = 0;
-                  if (subField != null && subField != "") {
-                    //RETURNS A '1' IF THERE IS NO MATCH
-                    //RETURNS A '0' IF THERE IS A MATCH
-                    var valueExists = doesSubFieldContainWithin(subfields,desiredValue,subField); 
+                  if (dataField == null) {
+                    //IF THE FIELD IT'S LOOKING FOR 
+                    //DOESN'T EXIST IN THE RECORD, IT SHOULD COUNT AS
+                    //AS A 'NO MATCH'
+                    var valueExists = 1;
                   }
                   else {
-                     //RETURNS A '1' IF THERE IS NO MATCH
-                     //RETURNS A '0' IF THERE IS A MATCH
-                     var valueExists = doesSubFieldContain(subfields,desiredValue);
-                  }
+                    var subfields = dataField.getChildren("subfield",slimNsp);
+                    //ui.alert(subfields);
                   
+                    if (subField != null && subField != "") {
+                      //RETURNS A '1' IF THERE IS NO MATCH
+                      //RETURNS A '0' IF THERE IS A MATCH
+                      var valueExists = doesSubFieldContainWithin(subfields,desiredValue,subField); 
+                    }
+                    else {
+                       //RETURNS A '1' IF THERE IS NO MATCH
+                       //RETURNS A '0' IF THERE IS A MATCH
+                       var valueExists = doesSubFieldContain(subfields,desiredValue);
+                    }
+                   }
                    matchedTheCriteria = matchedTheCriteria + valueExists;
                   //ui.alert("matched the criteria: " + matchedTheCriteria + " / " + desiredValue + "/" + subField);
                  
