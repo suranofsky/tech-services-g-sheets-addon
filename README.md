@@ -14,6 +14,10 @@ https://gsuite.google.com/marketplace/app/matchmarc/903511321480
 
 
 # Versions
+### 6-13-2020
+### Version 14
+## New Features and Fixes
+1) Fix - when a subfield is not found in a record, treat it like a no-match.
 
 ### 6-6-2020
 ### Version 12
