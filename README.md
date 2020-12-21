@@ -12,8 +12,13 @@ This add-on is publicly available using the “Add-ons > Get add-ons” menu in 
 You can also find the add-on here:
 https://gsuite.google.com/marketplace/app/matchmarc/903511321480
 
-
 # Versions
+### 12-21-2020
+### Version 15
+## Fixes
+1) Changed the API Key field in sidebar.html to type=password so the key isn't in plain text
+2) In the code that creates fields to add to records that will be emailed, namespace was added.  Otherwise a blank namespace was added.  At times MarcEdit would then not import the newly created fields.  Example: <datafield xmlns="" tag="980" ind1="" ind2="">
+
 ### 6-13-2020
 ### Version 14
 ## New Features and Fixes
