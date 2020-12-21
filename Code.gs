@@ -204,7 +204,7 @@ function startLookup(form) {
                   //ui.alert(dataField);
                   var valueExists = 0;
                   if (dataField == null) {
-                    //IF THE FIELD IT'S LOOKING FOR 
+                    //IF THE FIELD IT'S LOOKING FOR (FOR A MATCH)
                     //DOESN'T EXIST IN THE RECORD, IT SHOULD COUNT AS
                     //AS A 'NO MATCH'
                     var valueExists = 1;
@@ -495,6 +495,7 @@ function startLookup(form) {
        }
        var document = XmlService.parse(xml);
        var root = document.getRootElement();
+       var slimNsp = XmlService.getNamespace('http://www.loc.gov/MARC21/slim'); 
        if (root == null) continue;
        
        //*****ADD FIELDS TO THE MARC RECORD*******************************
@@ -518,13 +519,13 @@ function startLookup(form) {
                     Logger.log("value - for row/col" + i +" is" + fieldValue);
 
                     //CREATE DATAFIELD ELEMENT 
-                    var datafieldElement = XmlService.createElement("datafield");
+                    var datafieldElement = XmlService.createElement("datafield",slimNsp);
                     datafieldElement.setAttribute("tag",field);
                     datafieldElement.setAttribute("ind1","");
                     datafieldElement.setAttribute("ind2","");
                     
                     //CREATE SUBFIELD 
-                    var subfieldElement = XmlService.createElement("subfield");
+                    var subfieldElement = XmlService.createElement("subfield",slimNsp);
                     subfieldElement.setAttribute("code",subField);
                     subfieldElement.setText(fieldValue);
                     
@@ -568,12 +569,12 @@ function startLookup(form) {
                           var fieldValue = dataRange.getCell(tempx,i).getValue();
                           if (dataRange.getCell(tempx,i).isBlank()) continue;
                           
-                          var datafieldElement = XmlService.createElement("datafield");
+                          var datafieldElement = XmlService.createElement("datafield",slimNsp);
                           datafieldElement.setAttribute("tag",field);
                           datafieldElement.setAttribute("ind1","");
                           datafieldElement.setAttribute("ind2","");
                           
-                          var subfieldElement = XmlService.createElement("subfield");
+                          var subfieldElement = XmlService.createElement("subfield",slimNsp);
                           subfieldElement.setAttribute("code",subField);
                           subfieldElement.setText(fieldValue);
                           
@@ -615,6 +616,7 @@ function startLookup(form) {
  
  function addNewElement(collectionOfNewFields,newElement,subfieldElement,field) {
    var ui = SpreadsheetApp.getUi();
+   var slimNsp = XmlService.getNamespace('http://www.loc.gov/MARC21/slim'); 
    var existingField = getDataField(collectionOfNewFields,field);
    if (existingField == null) {
      collectionOfNewFields.push(newElement);
@@ -631,7 +633,7 @@ function startLookup(form) {
                  var v = subfieldElement.getText();
                  //NOTE: WOULDN'T LET ME ADD THE SUBFIELD IF IT WAS PASSED IN AS AN ARG
                  //ONLY LET ME IF I CREATED THE ELEMENT IN THIS FUNCTION?
-                 var subfield = XmlService.createElement('subfield');
+                 var subfield = XmlService.createElement('subfield',slimNsp);
                  subfield.setAttribute("code", code);
                  subfield.setText(v);
                  
