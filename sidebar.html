@@ -83,6 +83,7 @@
            </div>
            <br>
            
+       
            
          <div class="block form-group">
              <input type="button" class="action" value="email MARC file" onclick="startEmail();" />
@@ -99,9 +100,9 @@
          
         
          <br>
-     <span style="color:white"><b>v. 15</b></span>
+     <span style="color:white"><b>v. 16</b></span>
      <br>
-     <span style="color:white"><b><a style="color:white" href="https://github.com/suranofsky/tech-services-g-sheets-addon/blob/master/README.md#Versions" target="new">See details about v. 14 in github</a></b></span>
+     <span style="color:white"><b><a style="color:white" href="https://github.com/suranofsky/tech-services-g-sheets-addon/blob/master/README.md#Versions" target="new">github repo.</a></b></span>
      </div>
      
      
@@ -112,7 +113,16 @@
     
     <script>
     function startSearch() {
-      google.script.run.startLookup(document.getElementById('customerInfo'));
+      //IF BOTH DROP-DOWNS CONTAIN THE SAME TAB - SHOW AN ERROR
+      //searchForTab AND tabSelection
+      var searchCriteria = document.getElementById("searchForTab");
+      var selectionCriteria = document.getElementById("tabSelection");
+      if (searchCriteria.selectedIndex == selectionCriteria.selectedIndex) {
+        alert("The two drop-down boxes contain the same tab name");
+      }
+      else {
+        google.script.run.startLookup(document.getElementById('customerInfo'));
+      }
     }
     
     function startEmail() {
