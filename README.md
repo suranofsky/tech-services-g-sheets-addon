@@ -13,6 +13,14 @@ You can also find the add-on here:
 https://gsuite.google.com/marketplace/app/matchmarc/903511321480
 
 # Versions
+
+### 1-7-2020
+### Version 16
+## Fixes
+1) Typo on sidebar
+2) Added a validation that stops the search if the same tab is selected in both drop-down boxes
+  
+  
 ### 12-21-2020
 ### Version 15
 ## Fixes
