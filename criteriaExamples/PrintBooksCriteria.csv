@@ -1,0 +1,17 @@
+search:,,,,,,,
+holdings=LYU,<-- set your OCLC Symbol here or clear this cell if you don't want it to look for your own holdings,,,,,,
+040=dlc,040$b=eng,336$a=text,337$a=unmediated,338$a=volume,,,<-- all must be true for a 'match'
+042=pcc,040$b=eng,336$a=text,337$a=unmediated,338$a=volume,,,<-- all must be true for a 'match'
+336$a=text,337$a=unmediated,338$a=volume,,,,,<-- all must be true for a 'match'
+,,,,,,,
+,,,,,,,
+,,,,,,,
+,,,,,,,
+,,,,,,,
+fields:,starting column:,,,,,,
+001,4,"Cols 1,2,3 are used for ISBN, LCCN, 'local record found indicator'.  082:092:050 notation will print first field found.",,,,,
+100$a,,,,,,,
+245$a,,,,,,,
+245$b,,,,,,,
+300$a,,,,,,,
+260$c:264$c,,,,,,,

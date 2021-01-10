@@ -1,0 +1,14 @@
+search:,,,,,,,
+,<-- set your OCLC Symbol here or clear this cell if you don't want it to look for your own holdings,,,,,,
+042=pcc,040$b=eng,336$b=spw,337$b=c,338$b=cr,,,<-- all must be true for a 'match'
+042=pcc,040$b=eng,336$a=spoken word,337$a=computer,338$a=online resource,,,
+040$b=eng,336$b=spw,337$b=c,338$b=cr,,,,<-- all must be true for a 'match'
+040$b=eng,336$a=spoken word,337$a=computer,338$a=online resource,,,,
+,,,,,,,
+,,,,,,,
+,,,,,,,
+,,,,,,,
+fields:,starting column:,,,,,,
+001,4,,,,,,
+245$a,5,,,,,,
+300$a,6,,,,,,
