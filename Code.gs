@@ -20,7 +20,6 @@ function showSidebar() {
 }
 
 
-
 //THIS FUNCTION IS LAUNCHED WHEN THE 'START SEARCH' BUTTON
 //ON THE SIDEBAR IS CLICKED
 //'form' REPRESENTS THE FORM ON THE SIDEBAR
@@ -34,16 +33,18 @@ function startLookup(form) {
    
    var ui = SpreadsheetApp.getUi();
    
-   //MAKE SURE THE OCLC API KEY HAS BEEN ENTERED
    var apiKey = form.apiKey;
+   var apiSecret = form.apiSecret;
+   
+   //MAKE SURE THE OCLC API KEY HAS BEEN ENTERED
+   //SECRET NOT NEEDED FOR SEARCH API
    if (apiKey == null || apiKey == "") {
      ui.alert("OCLC API Key is Required");
      return;
    }
+   
    PropertiesService.getUserProperties().setProperty('apiKey', apiKey);
-   
-      
-   
+   PropertiesService.getUserProperties().setProperty('apiSecret', apiSecret);
    
    var startingRow = form.rowNumber;
    var selectFirstRecord = form.selectFirstRecord;
@@ -74,6 +75,7 @@ function startLookup(form) {
    
    //ADD THE ABILITY TO SEARCH BY ISSN
    //SEARCH TYPE WILL BE ISBN OR ISSN
+   //NEW 5-12-22 SEARCH TYPE COULD ALSO BE STANDARD NUMBER (SN)
    var searchType = dataSheet.getRange(1, 1).getValue().trim();
    
    //FOR EACH ITEM TO BE LOOKED UP IN THE DATA SPREADSHEET:
@@ -97,6 +99,9 @@ function startLookup(form) {
             //ISBN SEARCH
             if (isbn.length < 10) isbn = pad(10,isbn,0);
             searchCriteria = "srw.bn=" + "%22" + isbn + "%22";
+          }
+          else if (searchType == "SN") {
+            searchCriteria = "srw.sn=" + "%22" + isbn + "%22";
           }
           else {
             //ISSN SEARCH
@@ -342,6 +347,10 @@ function startLookup(form) {
      return PropertiesService.getUserProperties().getProperty('apiKey')
   }
   
+  function getStoredAPISecret() {
+     return PropertiesService.getUserProperties().getProperty('apiSecret')
+  }
+  
   function getStoredEmailAddress() {
     return PropertiesService.getUserProperties().getProperty('emailAddress')
   }
@@ -434,6 +443,14 @@ function startLookup(form) {
        return;
      }
      
+     //NEW 2-8-21 FOR WORLDCAT METADATA API
+     //MAKE SURE THE OCLC API SECRET HAS BEEN ENTERED
+     var apiSecret = form.apiSecret;
+     if (apiSecret == null || apiSecret == "") {
+       ui.alert("OCLC API Secret is Required");
+       return;
+     }
+     
      //MAKE SURE THE EMAIL ADDRESS HAS BEEN ENTERED
      var emailAddress = form.emailAddress;
      if (emailAddress == null || emailAddress == "") {
@@ -441,20 +458,36 @@ function startLookup(form) {
         return;
      }
      
-     //MAKE SURE THE EMAIL ADDRESS HAS BEEN ENTERED
+     //MAKE SURE THE OCLC COLUMN NUMBER HAS BEEN ENTERED
      var oclcColNumber = form.oclcNumber;
      if (oclcColNumber == null || oclcColNumber == "") {
         ui.alert("Indicate which column number the OCLC number is in.");
         return;
      }
      
+     //MAKE SURE THE OCLC COLUMN NUMBER IS A NUMBER - NOT A LETTER
+     if (!isNumeric(oclcColNumber)) {
+         ui.alert("Use column number (not letter) for '001 Value is in field:' ");
+         return;
+     }
+     
     
      PropertiesService.getUserProperties().setProperty('emailAddress', emailAddress);
      PropertiesService.getUserProperties().setProperty('oclcColNumber', oclcColNumber);
+     PropertiesService.getUserProperties().setProperty('apiKey', apiKey);
+     PropertiesService.getUserProperties().setProperty('apiSecret', apiSecret);
      
      //OPTIONAL - START ROW
      var startingRow = form.rowNumberForEmail;
      
+
+     var token = oAuthAuthenticate(apiKey,apiSecret);
+
+     //IF AUTHENICATION FAILS, METHOD DISPLAYS A MESSAGE
+     //AND RETURNS NULL...SO IF NULL QUIT THE PROCESS
+     if (token == null) return;
+
+
      //SETUP SHEETS/TABS/RANGES TO READ FROM/WRITE TO:
      
      var settingsTabName = form.tabSelection;
@@ -477,25 +510,20 @@ function startLookup(form) {
         if (listOfRecordIds.indexOf(oclcNumberCell.getValue()) >= 0) continue;
         listOfRecordIds.push(oclcNumberCell.getValue());
         oclcNumberCell.setBackground('#ffffcc');
-        //GET THE MARC RECORD BY OCLC NUMBER
-        var url = "http://www.worldcat.org/webservices/catalog/content/" + oclcNumberCell.getValue() + "?wskey=" + apiKey + "&recordSchema=info:srw/schema/1/marcxml-v1.1&frbrGrouping=off&servicelevel=full&sortKeys=LibraryCount,,0&frbrGrouping=off";
-        var options = {
-           "method" : "GET",
-           "headers" : {
-             "x-api-key" : apiKey
-           }
-        }
         try {
-         var xml = UrlFetchApp.fetch(url,options).getContentText();
+         var xml = callWorldCatMetaDataApi(oclcNumberCell.getValue(),token);
         }
         catch(err) {
             ui.alert("Communication with API failed.  Please check your API key.");
             ui.alert(err);
             return;
        }
-       var document = XmlService.parse(xml);
-       var root = document.getRootElement();
+       var worldCatNsp = XmlService.getNamespace('http://worldcat.org/rb'); 
        var slimNsp = XmlService.getNamespace('http://www.loc.gov/MARC21/slim'); 
+       var entryNsp = XmlService.getNamespace('http://www.w3.org/2005/Atom'); 
+       var document = XmlService.parse(xml);
+       var root = document.getRootElement().getChild("content",entryNsp).getChild("response",worldCatNsp).getChild("record", slimNsp)
+       
        if (root == null) continue;
        
        //*****ADD FIELDS TO THE MARC RECORD*******************************
@@ -612,6 +640,53 @@ function startLookup(form) {
     spreadsheet.toast("done! email sent to: " + emailAddress);
  }  
  
+ function callWorldCatMetaDataApi(oclcNumber,token) {
+     var ui = SpreadsheetApp.getUi();
+     var url = "https://worldcat.org/bib/data/" + oclcNumber;
+     
+     var options = {
+       "method" : "GET",
+       "muteHttpExceptions":true,
+       "headers": {
+          "Authorization": "Bearer " + token,
+        }
+     }
+
+     var response = UrlFetchApp.fetch(url,options);
+     //Logger.log(response.getContentText())
+     if (response.getResponseCode() > 200) {
+         ui.alert("Unable to call Worldcata Metadata API: " + response.getContentText())
+         return null;
+     }
+   
+   return response.getContentText();
+ }
+ 
+ function oAuthAuthenticate(username,password) {
+    //GET TOKEN 
+    var oAuthEndpoint = "https://oauth.oclc.org/token?grant_type=client_credentials&scope=WorldCatMetadataAPI";
+  
+    options = {
+        "method" : "POST",
+        "muteHttpExceptions":true,
+        "headers": {
+          "Authorization" : "Basic " + Utilities.base64Encode(username + ':' + password)
+          }
+    };
+    
+    var response = UrlFetchApp.fetch(oAuthEndpoint, options); 
+    if (response.getResponseCode() > 200) {
+      var ui = SpreadsheetApp.getUi();
+      ui.alert("Unable to authenticate: " + response.getContentText())
+      Logger.log(response.getResponseCode())
+      Logger.log(response.getContentText())
+      return null;
+    }
+    
+    var dataAll = JSON.parse(response.getContentText());
+    return dataAll.access_token; 
+ 
+ }
  
  
  function addNewElement(collectionOfNewFields,newElement,subfieldElement,field) {
@@ -646,5 +721,8 @@ function startLookup(form) {
    //COLLECTION OF FIELDS W/THE NEW FIELD ADDED
    return collectionOfNewFields;
  }
-  
-
+ 
+ 
+ function isNumeric(s) {
+    return !isNaN(s - parseFloat(s));
+ }
