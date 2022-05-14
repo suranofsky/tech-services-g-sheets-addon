@@ -25,8 +25,11 @@
   
    function getDataField(dataFields,lookForField) {
           var ui = SpreadsheetApp.getUi();
+          Logger.log("looking for...." + lookForField);
+          //Logger.log("datafields" + dataFields.getAllContent());
           for (var z = 0; z < dataFields.length; z++) {
              var tagAttribute = dataFields[z].getAttribute("tag");
+             Logger.log("looking for" + lookForField);
              if (tagAttribute != null && tagAttribute.getValue() == lookForField) {  //e.g. 040
                  return dataFields[z];
              }
