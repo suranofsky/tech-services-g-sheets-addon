@@ -14,6 +14,12 @@ https://gsuite.google.com/marketplace/app/matchmarc/903511321480
 
 # Versions
 
+### 5-14-2022
+### Version 17
+## Updates
+1) WorldCat metadata API for emails
+2) Addition of standard number for searching
+
 ### 1-7-2021
 ### Version 16
 ## Fixes
