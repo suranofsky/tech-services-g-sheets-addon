@@ -13,6 +13,12 @@ You can also find the add-on here:
 https://gsuite.google.com/marketplace/app/matchmarc/903511321480
 
 # Versions
+# 11-15-2025
+## Version 21
+### Updates
+1) Implement v2 of the WorldCat Search API
+   
+# Versions
 # 4-22-2024
 ## Version 20
 ### Updates
