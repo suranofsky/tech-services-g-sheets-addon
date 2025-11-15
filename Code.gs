@@ -98,18 +98,18 @@ function startLookup(form) {
           if (searchType == "ISBN") {
             //ISBN SEARCH
             if (isbn.length < 10) isbn = pad(10,isbn,0);
-            searchCriteria = "srw.bn=" + "%22" + isbn + "%22";
+            searchCriteria = "bn=" + "%22" + isbn + "%22";
           }
           else if (searchType == "SN") {
-            searchCriteria = "srw.sn=" + "%22" + isbn + "%22";
+            searchCriteria = "sn=" + "%22" + isbn + "%22";
           }
           else {
             //ISSN SEARCH
-            searchCriteria = "srw.in=" + "%22" + isbn + "%22";
+            searchCriteria = "in=" + "%22" + isbn + "%22";
           }
         }
         else if (!lccnCell.isBlank()) {
-          searchCriteria = "srw.dn=" + "%22" + lccnCell.getValue() + "%22";
+          searchCriteria = "nl=" + "%22" + lccnCell.getValue() + "%22";
         }
         else {
           continue;
