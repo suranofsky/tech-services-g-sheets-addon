@@ -405,7 +405,6 @@ function startLookup(form) {
            "x-api-key" : apiKey
          }
       }
-      //ui.alert(url);
       var xml = UrlFetchApp.fetch(url,options).getContentText();
       var document = XmlService.parse(xml);
       return document;
@@ -522,7 +521,9 @@ function startLookup(form) {
        var slimNsp = XmlService.getNamespace('http://www.loc.gov/MARC21/slim'); 
        var entryNsp = XmlService.getNamespace('http://www.w3.org/2005/Atom'); 
        var document = XmlService.parse(xml);
-       var root = document.getRootElement().getChild("content",entryNsp).getChild("response",worldCatNsp).getChild("record", slimNsp)
+       //1.0 API - RETIRED 4/2024
+       //var root = document.getRootElement().getChild("content",entryNsp).getChild("response",worldCatNsp).getChild("record", slimNsp)
+       var root = document.getRootElement()
        
        if (root == null) continue;
        
@@ -642,18 +643,20 @@ function startLookup(form) {
  
  function callWorldCatMetaDataApi(oclcNumber,token) {
      var ui = SpreadsheetApp.getUi();
-     var url = "https://worldcat.org/bib/data/" + oclcNumber;
+     //1.0 API - RETIRED 4/2024
+     //var url = "https://worldcat.org/bib/data/" + oclcNumber;
+     var url = "https://metadata.api.oclc.org/worldcat/manage/bibs/" + oclcNumber;
      
      var options = {
        "method" : "GET",
        "muteHttpExceptions":true,
        "headers": {
           "Authorization": "Bearer " + token,
+          "Accept": "application/marcxml+xml"
         }
      }
 
      var response = UrlFetchApp.fetch(url,options);
-     //Logger.log(response.getContentText())
      if (response.getResponseCode() > 200) {
          ui.alert("Unable to call Worldcata Metadata API: " + response.getContentText())
          return null;

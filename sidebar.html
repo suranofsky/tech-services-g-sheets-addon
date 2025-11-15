@@ -22,6 +22,13 @@
               <br>
            </div>
            <br>
+           <div class="block form-group">
+              <span style="color:white"><b>OCLC API Secret</b></span>
+              <br>
+              <input type="password" id="apiSecret" name="apiSecret" placeholder="secret (required for emailing records)" value=""/>
+              <br>
+           </div>
+           <br>
            <span style="color:white"><b>Select tab that contains ISBNs</b></span>
            <br>
            <div class="block form-group">
@@ -69,6 +76,8 @@
            </div>
            <br>
            <span style="color:white"><b>001 Value is in field:</b></span>
+           <br>
+           <span style="color:white">use column number - not letter</span>
            <div class="block form-group">
               <input type="text" id="oclcNumber" name="oclcNumber" placeholder="column number?" value=""/>
            </div>
@@ -100,7 +109,7 @@
          
         
          <br>
-     <span style="color:white"><b>v. 16</b></span>
+     <span style="color:white"><b>v. 20</b></span>
      <br>
      <span style="color:white"><b><a style="color:white" href="https://github.com/suranofsky/tech-services-g-sheets-addon/blob/master/README.md#Versions" target="new">github repo.</a></b></span>
      </div>
@@ -139,6 +148,7 @@
         $(function() {
            google.script.run.withSuccessHandler(showTabsInSidebar).getTabs(); 
            google.script.run.withSuccessHandler(setKey).getStoredAPIKey();
+           google.script.run.withSuccessHandler(setSecret).getStoredAPISecret();
            google.script.run.withSuccessHandler(setEmail).getStoredEmailAddress();
            google.script.run.withSuccessHandler(setOclcCol).getStoredOclcColNumber();
         });
@@ -156,6 +166,11 @@
         function setKey(apiKey){
           if (apiKey == null  || apiKey === undefined) apiKey = "";
           document.getElementById('apiKey').value=apiKey;
+        }
+        
+        function setSecret(apiSecret){
+          if (apiSecret == null  || apiSecret === undefined) apiSecret = "";
+          document.getElementById('apiSecret').value=apiSecret;
         }
       
         function showTabsInSidebar(tabs) {
