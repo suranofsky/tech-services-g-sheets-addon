@@ -13,6 +13,10 @@ You can also find the add-on here:
 https://gsuite.google.com/marketplace/app/matchmarc/903511321480
 
 # Versions
+### 4-22-2024
+### Version 20
+## Updates
+1) Retired WorldCat metadata API for emails - https://worldcat.org/bib/data/
 
 ### 5-14-2022
 ### Version 17
