@@ -20,7 +20,6 @@ https://gsuite.google.com/marketplace/app/matchmarc/903511321480
 2) Added support for govdocs 'GN' search
 3) 'Toast' displays for each search (is this helpful?)
    
-# Versions
 # 4-22-2024
 ## Version 20
 ### Updates
