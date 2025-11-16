@@ -103,6 +103,7 @@
             //MAKES THE EMAIL GENERATION STEP FAIL IF NOT REMOVED
             if (tagId == 001) {
                 valueWithoutAlpha = controlFields[x].getValue().replace(/[a-zA-Z]/g, "");
+                controlFields[x].setText(valueWithoutAlpha);
             }
            return controlFields[x];
          }
