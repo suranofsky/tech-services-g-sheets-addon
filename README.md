@@ -17,6 +17,8 @@ https://gsuite.google.com/marketplace/app/matchmarc/903511321480
 ## Version 21
 ### Updates
 1) Implement v2 of the WorldCat Search API
+2) Added support for govdocs 'GN' search
+3) 'Toast' displays for each search (is this helpful?)
    
 # Versions
 # 4-22-2024
