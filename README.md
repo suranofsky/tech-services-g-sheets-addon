@@ -17,8 +17,15 @@ https://gsuite.google.com/marketplace/app/matchmarc/903511321480
 ## Version 21
 ### Updates
 1) Implement v2 of the WorldCat Search API
-2) Added support for govdocs 'GN' search
-3) 'Toast' displays for each search (is this helpful?)
+2) 'Toast' displays for each search (is this helpful?)<BR>
+3) Added support for govdocs 'GN' search <BR>
+
+   In the top row, in place of ISBN, if you use 'GN' it will search using gn= (govdoc).  It continues to support these values also:<BR>
+      - SN - Standard Number
+      - IN - ISSN
+  
+   <img width="756" height="308" alt="image" src="https://github.com/user-attachments/assets/5f74006f-b5da-4b69-8452-75da7cf8c343" />
+
    
 # 4-22-2024
 ## Version 20
