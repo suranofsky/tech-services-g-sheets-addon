@@ -98,6 +98,13 @@
          var cField = controlFields[x];
          var tagValue = cField.getAttribute("tag");
          if (tagValue != null && tagValue.getValue() == tagId) {
+            //IF THIS IS THE 001 FIELD, REMOVE THE 'ALPHA CHARS'
+            //NEW API NOW RETURNS VALUES LIKE ocn965795283 - WHICH
+            //MAKES THE EMAIL GENERATION STEP FAIL IF NOT REMOVED
+            if (tagId == 001) {
+                valueWithoutAlpha = controlFields[x].getValue().replace(/[a-zA-Z]/g, "");
+                controlFields[x].setText(valueWithoutAlpha);
+            }
            return controlFields[x];
          }
       }

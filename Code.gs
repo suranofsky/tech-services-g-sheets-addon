@@ -32,7 +32,7 @@ function showSidebar() {
 function startLookup(form) {
    
    var ui = SpreadsheetApp.getUi();
-   
+    
    var apiKey = form.apiKey;
    var apiSecret = form.apiSecret;
    
@@ -98,24 +98,30 @@ function startLookup(form) {
           if (searchType == "ISBN") {
             //ISBN SEARCH
             if (isbn.length < 10) isbn = pad(10,isbn,0);
-            searchCriteria = "srw.bn=" + "%22" + isbn + "%22";
+            searchCriteria = "bn=" + "%22" + isbn + "%22";
           }
           else if (searchType == "SN") {
-            searchCriteria = "srw.sn=" + "%22" + isbn + "%22";
+            //STANDARD NUMBER
+            searchCriteria = "sn=" + "%22" + isbn + "%22";
+          }
+          else if (searchType == "GN") {
+            //GOV-DOCS
+            searchCriteria = "gn=" + "%22" + isbn + "%22";
           }
           else {
-            //ISSN SEARCH
-            searchCriteria = "srw.in=" + "%22" + isbn + "%22";
+            //ISSN
+            searchCriteria = "in=" + "%22" + isbn + "%22";
           }
         }
         else if (!lccnCell.isBlank()) {
-          searchCriteria = "srw.dn=" + "%22" + lccnCell.getValue() + "%22";
+          searchCriteria = "nl=" + "%22" + lccnCell.getValue() + "%22";
         }
         else {
           continue;
         }
         if (searchCriteria == null) continue;
         
+        spreadsheet.toast("Searching for " + searchCriteria.replaceAll("%22", ""));
         
         //IF SEARCH FOR LOCAL HOLDINGS IS REQUIRED, CALL THE API INLCUDING THE
         //OCLC SYMBOL
@@ -145,24 +151,14 @@ function startLookup(form) {
          ui.alert("API call failed.  Please check your API key.");
          ui.alert(err);
          return;
-       }
-       
-       
-       var nsp = XmlService.getNamespace('http://www.loc.gov/zing/srw/');
-       var slimNsp = XmlService.getNamespace('http://www.loc.gov/MARC21/slim'); 
-     
-       var root = searchResults.getRootElement();
-       //var test = root.getChild("numberOfRecords",nsp).getValue();
-       var records = root.getChild("records",nsp);
-       if (records == null) continue; //CONTINUE ON TO THE NEXT RECORD...API DIDN'T FIND ANYTHING
-       
-       
+       }       
 
        var collectionOfSettingsRange = settingsSheet.getRange(3,1,8,6);
        
        
        //FOR EACH RECORD FOUND FOR THIS ISBN/LCCN:
-       var listOfRecords = records.getChildren();
+       var listOfRecords = searchResults["bibRecords"]
+       if (listOfRecords == null) continue;
        var found = false;
        
        //LOOK AT THE MATCH CRITERIA:
@@ -170,10 +166,29 @@ function startLookup(form) {
        //THE FIRST RECORD IT FINDS WITH ALL MATCH CRITERIA IS THE RECORD IT SELECTS
        //THAT MEANS THE RESULTS ARE A RECORD THAT MATCHED WHICH HAS THE LARGEST NUMBER
        //OF HOLDINGS
-       for (var y = 0; y < listOfRecords.length; y++) {      
-           var controlFieldsInLocalRecord = listOfRecords[y].getChild("recordData",nsp).getChild("record",slimNsp).getChildren("controlfield",slimNsp);
+       for (var y = 0; y < listOfRecords.length; y++) {  
+
+
+           //GET THE MARC RECORD
+           var oclcNumber = listOfRecords[y]["identifier"]["oclcNumber"];
+           bearerToken = getToken('WorldCatMetadataAPI:view_marc_bib');
+           getMARCUrl = 'https://metadata.api.oclc.org/worldcat/manage/bibs/' + oclcNumber;
+            var options = {
+              "method" : "GET",
+              "headers" : {
+              "Authorization": "Bearer " + bearerToken,
+              "Accept": "application/marcxml+xml"
+            },
+            "muteHttpExceptions": false
+           }
+           var xml = UrlFetchApp.fetch(getMARCUrl,options).getContentText();
+           var document = XmlService.parse(xml);
+           record = document.getRootElement();
+           var nsp = XmlService.getNamespace('http://www.loc.gov/zing/srw/');
+           var slimNsp = XmlService.getNamespace('http://www.loc.gov/MARC21/slim'); 
+           controlFieldsInLocalRecord = record.getChildren("controlfield",slimNsp);  
            var oclcNumber = getControlFieldValue(controlFieldsInLocalRecord,"001");
-       
+    
            //LOOPS THROUGH THE SETTINGS
            //ROWS OF MATCH CRITERIA
            for (var i = 1; i < 8; i++) {
@@ -202,8 +217,8 @@ function startLookup(form) {
                   var desiredValue = v.substring(indexOfValue+1,l);
                    
                    
-                  var dataFields = listOfRecords[y].getChild("recordData",nsp).getChild("record",slimNsp).getChildren("datafield",slimNsp);
-                  var controlFields = listOfRecords[y].getChild("recordData",nsp).getChild("record",slimNsp).getChildren("controlfield",slimNsp);  
+                  var dataFields = record.getChildren("datafield",slimNsp);
+                  var controlFields = record.getChildren("controlfield",slimNsp);   
                   //ui.alert("GETTING THE DATA FIELDS FOR " + field);
                   var dataField = getDataField(dataFields,field); //040
                   //ui.alert(dataField);
@@ -257,9 +272,24 @@ function startLookup(form) {
        //IT WILL BE THE ONE WITH THE LARGEST NUMBER OF HOLDINGS
        //6-6-20 MAKING THIS CONFIGURABLE WITH A CHECKBOX
        if (listOfRecords.length > 0 && found == false && selectFirstRecord == "true") {
-         var dataFields = listOfRecords[0].getChild("recordData",nsp).getChild("record",slimNsp).getChildren("datafield",slimNsp);
-         var controlFields = listOfRecords[0].getChild("recordData",nsp).getChild("record",slimNsp).getChildren("controlfield",slimNsp);
-         matchFoundWriteResults(outputRange,dataFields,controlFields,dataRange,x,dataSheet,0);
+        //GET THE MARC RECORD
+        var oclcNumber = listOfRecords[0]["identifier"]["oclcNumber"];
+        bearerToken = getToken('WorldCatMetadataAPI:view_marc_bib');
+        getMARCUrl = 'https://metadata.api.oclc.org/worldcat/manage/bibs/' + oclcNumber;
+        var options = {
+          "method" : "GET",
+          "headers" : {
+          "Authorization": "Bearer " + bearerToken,
+          "Accept": "application/marcxml+xml"
+        },
+        "muteHttpExceptions": false
+        }
+        var xml = UrlFetchApp.fetch(getMARCUrl,options).getContentText();
+        var document = XmlService.parse(xml);
+        record = document.getRootElement();
+        var dataFields = record.getChildren("datafield",slimNsp);
+        var controlFields = record.getChildren("controlfield",slimNsp);
+        matchFoundWriteResults(outputRange,dataFields,controlFields,dataRange,x,dataSheet,0);
        }
        
    }
@@ -364,29 +394,47 @@ function startLookup(form) {
   //CALL THE WORLDCAT API SPECIFICALLY LOOKING FOR LOCAL HOLDINGS
   function findLocalRecord(x,dataRange,searchCriteria,localCode,outputRange,dataSheet) {
        var ui = SpreadsheetApp.getUi();
-       var apiKey = PropertiesService.getUserProperties().getProperty('apiKey');
-       var url = "http://worldcat.org/webservices/catalog/search/sru?query=" + searchCriteria + " AND srw.li=" + localCode + "&wskey=" + apiKey + "&recordSchema=info:srw/schema/1/marcxml-v1.1&frbrGrouping=off&servicelevel=full";
+       var bearerToken = getToken('wcapi:view_bib')
+       var url = "https://americas.discovery.api.oclc.org/worldcat/search/v2/bibs?q=" + searchCriteria + "&heldBySymbol=" + localCode;
        var options = {
          "method" : "GET",
          "headers" : {
-           "x-api-key" : apiKey
-         }
-       };
-       var xml = UrlFetchApp.fetch(url,options).getContentText();
-       var document = XmlService.parse(xml);
-       var nsp = XmlService.getNamespace('http://www.loc.gov/zing/srw/');
-       var slimNsp = XmlService.getNamespace('http://www.loc.gov/MARC21/slim'); 
-    
-       var root = document.getRootElement();
-       var recordCount = root.getChild("numberOfRecords",nsp).getValue();
+           "Authorization": "Bearer " + bearerToken,
+         },
+        "muteHttpExceptions": true
+       }
+       var responseText = UrlFetchApp.fetch(url,options).getContentText();
+       responseAsJson = JSON.parse(responseText);
+       var recordCount = responseAsJson["numberOfRecords"];
        if (recordCount > 0) {
-         //FOUND A LOCAL RECORD, WRITE RESULTS TO THE SPREADSHEET
-         var records = root.getChild("records",nsp);
-         var listOfRecords = records.getChildren();
-         var dataFields = listOfRecords[0].getChild("recordData",nsp).getChild("record",slimNsp).getChildren("datafield",slimNsp);
-         var controlFields = listOfRecords[0].getChild("recordData",nsp).getChild("record",slimNsp).getChildren("controlfield",slimNsp);  
-         matchFoundWriteResults(outputRange,dataFields,controlFields,dataRange,x,dataSheet,recordCount);
-         return true;
+          //FOUND A LOCAL RECORD, WRITE RESULTS TO THE SPREADSHEET
+          var listOfRecords = responseAsJson["bibRecords"];
+
+          //HAVE TO GET RECORD ITSELF WITH A 2ND API CALL
+
+          var oclcNumber = listOfRecords[0]["identifier"]["oclcNumber"];
+          bearerToken = getToken('WorldCatMetadataAPI:view_marc_bib')
+          getMARCUrl = 'https://metadata.api.oclc.org/worldcat/manage/bibs/' + oclcNumber;
+          var options = {
+            "method" : "GET",
+            "headers" : {
+            "Authorization": "Bearer " + bearerToken,
+            "Accept": "application/marcxml+xml"
+            },
+            "muteHttpExceptions": true
+          }
+          var xml = UrlFetchApp.fetch(getMARCUrl,options).getContentText();
+          var document = XmlService.parse(xml);
+          var nsp = XmlService.getNamespace('http://www.loc.gov/zing/srw/');
+          var slimNsp = XmlService.getNamespace('http://www.loc.gov/MARC21/slim'); 
+          record = document.getRootElement();
+
+
+          dataFields = record.getChildren("datafield",slimNsp);
+          controlFields = record.getChildren("controlfield",slimNsp);  
+
+          matchFoundWriteResults(outputRange,dataFields,controlFields,dataRange,x,dataSheet,recordCount);
+          return true;
        }
        return false;
   }
@@ -396,18 +444,18 @@ function startLookup(form) {
   //OF HOLDINGS LIBRARIES
   //SEARCH CRITERIA IS EITHER BY ISSN OR LCCN
   function findRecord(searchCriteria) {
-     var ui = SpreadsheetApp.getUi();
-      var apiKey = PropertiesService.getUserProperties().getProperty('apiKey');
-      var url = "http://worldcat.org/webservices/catalog/search/sru?query=" + searchCriteria + "&wskey=" + apiKey + "&recordSchema=info:srw/schema/1/marcxml-v1.1&frbrGrouping=off&servicelevel=full&sortKeys=LibraryCount,,0&frbrGrouping=off";
+      var ui = SpreadsheetApp.getUi();
+      var bearerToken = getToken('wcapi:view_bib')
+      var url = "https://americas.discovery.api.oclc.org/worldcat/search/v2/bibs?q=" + searchCriteria + "&orderBy=mostWidelyHeld"
       var options = {
          "method" : "GET",
          "headers" : {
-           "x-api-key" : apiKey
+           "Authorization": "Bearer " + bearerToken,
          }
       }
-      var xml = UrlFetchApp.fetch(url,options).getContentText();
-      var document = XmlService.parse(xml);
-      return document;
+      var responseText = UrlFetchApp.fetch(url,options).getContentText();
+      responseAsJson = JSON.parse(responseText);
+      return responseAsJson;
   }
   
   function lastRowInRange(range) {
@@ -477,10 +525,9 @@ function startLookup(form) {
      PropertiesService.getUserProperties().setProperty('apiSecret', apiSecret);
      
      //OPTIONAL - START ROW
-     var startingRow = form.rowNumberForEmail;
-     
+     var startingRow = form.rowNumberForEmail; 
 
-     var token = oAuthAuthenticate(apiKey,apiSecret);
+     var token = getToken('WorldCatMetadataAPI');
 
      //IF AUTHENICATION FAILS, METHOD DISPLAYS A MESSAGE
      //AND RETURNS NULL...SO IF NULL QUIT THE PROCESS
@@ -728,4 +775,35 @@ function startLookup(form) {
  
  function isNumeric(s) {
     return !isNaN(s - parseFloat(s));
+ }
+
+ function getToken(scope) {
+
+    var key = getStoredAPIKey();
+    var secret = getStoredAPISecret();
+    var ui = SpreadsheetApp.getUi();
+
+    const payload = {
+      'grant_type': 'client_credentials',
+      'scope': scope
+    };
+
+    url = "https://oauth.oclc.org/token"
+    encodedCredentials = Utilities.base64Encode(key + ":" + secret);
+    var options = {
+    "contentType": "application/x-www-form-urlencoded",
+    "method": "POST", // or "POST", "PUT", etc.
+        "headers": {
+          "Authorization": "Basic " + encodedCredentials
+        },
+        "payload": payload,
+        "muteHttpExceptions": true 
+    };
+    var responseText = UrlFetchApp.fetch(url,options).getContentText();
+    responseAsJson = JSON.parse(responseText);
+    var token = responseAsJson["access_token"];
+    return token;
+
+    
+
  }
