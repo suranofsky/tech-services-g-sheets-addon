@@ -121,7 +121,6 @@ function startLookup(form) {
         }
         if (searchCriteria == null) continue;
         
-        spreadsheet.toast("Searching for " + searchCriteria.replaceAll("%22", ""));
         
         //IF SEARCH FOR LOCAL HOLDINGS IS REQUIRED, CALL THE API INLCUDING THE
         //OCLC SYMBOL
