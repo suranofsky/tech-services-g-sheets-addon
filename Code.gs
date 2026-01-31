@@ -19,6 +19,102 @@ function showSidebar() {
       .showSidebar(html);    
 }
 
+function testApiKeys(form) {
+  var ui = SpreadsheetApp.getUi();
+  var apiKey = form.apiKey;
+  var apiKey = form.apiKey;
+  var apiSecret = form.apiSecret;
+
+  var response = ui.alert(
+    'This will test the OCLC "search" endpoint and the "manage" endpoint using your API key and secret.  You need permissions for both of these API calls for MatchMARC.  If the test requests fail, you can use the details in the error message to request the needed access from OCLC.',
+    ui.ButtonSet.OK_CANCEL
+  );
+
+ 
+   if (response !== ui.Button.OK) {
+    return; 
+  }
+
+   
+  //MAKE SURE THE OCLC API KEY HAS BEEN ENTERED
+  //SECRET NOT NEEDED FOR SEARCH API
+  if (apiKey == null || apiKey == "") {
+    ui.alert("OCLC API Key is Required");
+    return;
+  }
+
+  //MAKE SURE THE OCLC API SECRET HAS BEEN ENTERED
+  if (apiSecret == null || apiSecret == "") {
+    ui.alert("OCLC API Secret is Required");
+    return;
+  }
+   
+  PropertiesService.getUserProperties().setProperty('apiKey', apiKey);
+  PropertiesService.getUserProperties().setProperty('apiSecret', apiSecret);
+
+  //TEST SEARCH:
+  var bearerToken = getToken('wcapi:view_bib')
+  searchUrl = "https://americas.discovery.api.oclc.org/worldcat/search/v2/bibs?q=sn=003100063623"
+  var options = {
+    "method" : "GET",
+    "headers" : {
+    "Authorization": "Bearer " + bearerToken,
+    },
+  "muteHttpExceptions": true
+  }
+
+  try {
+    response = UrlFetchApp.fetch(searchUrl, options);
+    const responseCode = response.getResponseCode();
+    const responseText = response.getContentText();
+
+    if (responseCode >= 200 && responseCode < 300) {
+      // Handle successful responses (e.g., 200 OK)
+      ui.alert(`1 of 2 tests - Success calling search API using scope wcapi:view_bib`);
+    } else {
+      // Handle error responses (e.g., 404 Not Found, 500 Internal Server Error)
+      ui.alert(`1 of 2 tests - Error (${responseCode}): ${responseText} : API call to ${searchUrl} failed using scopeType wcapi:view_bib`);
+    }
+  } catch (e) {
+    // This catch block handles exceptions that still occur, 
+    // such as network issues, invalid URLs, or DNS problems, 
+    // even with muteHttpExceptions set to true.
+    ui.alert(`Exception during fetch: ${e.toString()}`);
+  }
+
+  //TEST MANAGE API CALL
+  bearerToken = getToken('WorldCatMetadataAPI:view_marc_bib')
+  getMARCUrl = 'https://metadata.api.oclc.org/worldcat/manage/bibs/965795283';
+    var options = {
+      "method" : "GET",
+      "headers" : {
+      "Authorization": "Bearer " + bearerToken,
+      "Accept": "application/marcxml+xml"
+    },
+    "muteHttpExceptions": true
+  }
+
+  try {
+    response = UrlFetchApp.fetch(getMARCUrl, options);
+    const responseCode = response.getResponseCode();
+    const responseText = response.getContentText();
+
+    if (responseCode >= 200 && responseCode < 300) {
+      // Handle successful responses (e.g., 200 OK)
+      ui.alert(`2 of 2 tests - Success calling manage API using scope WorldCatMetadataAPI:view_marc_bib`);
+    } else {
+      // Handle error responses (e.g., 404 Not Found, 500 Internal Server Error)
+      ui.alert(`2 of 2 tests - Error (${responseCode}): ${responseText} : API call to ${searchUrl} failed using scopeType WorldCatMetadataAPI:view_marc_bib`);
+    }
+  } catch (e) {
+    // This catch block handles exceptions that still occur, 
+    // such as network issues, invalid URLs, or DNS problems, 
+    // even with muteHttpExceptions set to true.
+    ui.alert(`Exception during fetch: ${e.toString()}`);
+  }
+
+}
+
 
 //THIS FUNCTION IS LAUNCHED WHEN THE 'START SEARCH' BUTTON
 //ON THE SIDEBAR IS CLICKED
@@ -121,7 +217,6 @@ function startLookup(form) {
         }
         if (searchCriteria == null) continue;
         
-        spreadsheet.toast("Searching for " + searchCriteria.replaceAll("%22", ""));
         
         //IF SEARCH FOR LOCAL HOLDINGS IS REQUIRED, CALL THE API INLCUDING THE
         //OCLC SYMBOL
@@ -166,12 +261,11 @@ function startLookup(form) {
        //THE FIRST RECORD IT FINDS WITH ALL MATCH CRITERIA IS THE RECORD IT SELECTS
        //THAT MEANS THE RESULTS ARE A RECORD THAT MATCHED WHICH HAS THE LARGEST NUMBER
        //OF HOLDINGS
+       bearerToken = getToken('WorldCatMetadataAPI:view_marc_bib');
        for (var y = 0; y < listOfRecords.length; y++) {  
-
-
+           if (y % 10 == 0)  bearerToken = getToken('WorldCatMetadataAPI:view_marc_bib');
            //GET THE MARC RECORD
            var oclcNumber = listOfRecords[y]["identifier"]["oclcNumber"];
-           bearerToken = getToken('WorldCatMetadataAPI:view_marc_bib');
            getMARCUrl = 'https://metadata.api.oclc.org/worldcat/manage/bibs/' + oclcNumber;
             var options = {
               "method" : "GET",
