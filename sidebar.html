@@ -64,6 +64,7 @@
            
          <div class="block form-group">
               <input type="button" class="action" value="Start Search" onclick="startSearch()" />
+              <input type="button" class="action" value="Test Keys" onclick="callTestKeys()" />
          </div>
          <br><hr>
          
@@ -109,7 +110,7 @@
          
         
          <br>
-     <span style="color:white"><b>v. 21 (Nov. 2025)</b></span>
+     <span style="color:white"><b>v. 23 (Jan. 2026)</b></span>
      <br>
      <span style="color:white"><b><a style="color:white" href="https://github.com/suranofsky/tech-services-g-sheets-addon/blob/master/README.md#Versions" target="new">github repo.</a></b></span>
      </div>
@@ -136,6 +137,10 @@
     
     function startEmail() {
       google.script.run.sendMARCRecordByEmail(document.getElementById('customerInfo'));
+    }
+
+    function callTestKeys() {
+      google.script.run.testApiKeys(document.getElementById('customerInfo'));
     }
     </script>
 
