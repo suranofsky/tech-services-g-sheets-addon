@@ -104,7 +104,7 @@ function testApiKeys(form) {
       ui.alert(`2 of 2 tests - Success calling manage API using scope WorldCatMetadataAPI:view_marc_bib`);
     } else {
       // Handle error responses (e.g., 404 Not Found, 500 Internal Server Error)
-      ui.alert(`2 of 2 tests - Error (${responseCode}): ${responseText} : API call to ${searchUrl} failed using scopeType WorldCatMetadataAPI:view_marc_bib`);
+      ui.alert(`2 of 2 tests - Error (${responseCode}): ${responseText} : API call to ${getMARCUrl} failed using scopeType WorldCatMetadataAPI:view_marc_bib`);
     }
   } catch (e) {
     // This catch block handles exceptions that still occur, 
