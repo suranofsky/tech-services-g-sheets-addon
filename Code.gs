@@ -621,7 +621,7 @@ function startLookup(form) {
      //OPTIONAL - START ROW
      var startingRow = form.rowNumberForEmail; 
 
-     var token = getToken('WorldCatMetadataAPI');
+     var token = getToken('WorldCatMetadataAPI:view_marc_bib');
 
      //IF AUTHENICATION FAILS, METHOD DISPLAYS A MESSAGE
      //AND RETURNS NULL...SO IF NULL QUIT THE PROCESS
